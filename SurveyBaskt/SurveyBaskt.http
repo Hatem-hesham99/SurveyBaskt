@@ -1,0 +1,6 @@
+@SurveyBaskt_HostAddress = http://localhost:5180
+
+GET {{SurveyBaskt_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
