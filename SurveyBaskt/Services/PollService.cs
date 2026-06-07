@@ -26,11 +26,11 @@
             return poll;    
         }
 
-        public bool Update(Poll poll)
+        public bool Update(int id, Poll poll)
         {
             if (poll.Id == null ) return false;
 
-            var findPoll = Get(poll.Id);
+            var findPoll = Get(id);
 
             if (findPoll == null)
                 return false;

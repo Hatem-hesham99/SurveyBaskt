@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SurveyBaskt.Contracts.Responses;
+using System.ComponentModel.DataAnnotations;
 
 namespace SurveyBaskt.Models
 {
@@ -8,5 +9,7 @@ namespace SurveyBaskt.Models
         public int Id { get; set; } 
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+
+    
     }
 }

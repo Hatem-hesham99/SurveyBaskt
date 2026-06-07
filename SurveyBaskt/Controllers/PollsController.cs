@@ -1,4 +1,8 @@
-﻿
+﻿using Mapster;
+using SurveyBaskt.Contracts.Requests;
+using SurveyBaskt.Contracts.Responses;
+using SurveyBaskt.Mapping;
+
 namespace SurveyBaskt.Controllers;
 
 
@@ -14,35 +18,48 @@ public class PollsController(IPollService _pollService) : ControllerBase
     {
        var polls = _pollService.GetAll();
 
-       return Ok(polls);
+        var data = polls.Adapt<IEnumerable<PollResponse>>();
+
+        return Ok(data);
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id}")]
     public IActionResult Get(int id)
     {
+
         Poll? poll = _pollService.Get(id);
+
+        if (poll is null) return NotFound($"not found poll have id = {id}");
+
+        //var confg = new TypeAdapterConfig();
+
+        //confg.NewConfig<Poll,PollResponse>()
+        //     .Map(dist=>dist.Name , src=>src.Title);
+       
+
+        var data = poll.Adapt<PollResponse>();
         
-        return poll is null ? NotFound() : Ok(poll);
+        return    Ok(data);
     }
 
     [HttpPost("")]
-    public IActionResult Add(Poll poll)
+    public IActionResult Add([FromBody] CreatePollRequest request)
     {  
-      var newpoll =  _pollService.Add(poll);   
+      var newpoll =  _pollService.Add(request.Adapt<Poll>());   
 
-      return CreatedAtAction(nameof(Get), new { id = newpoll.Id }, newpoll);
+      return CreatedAtAction(nameof(Get), new { id = newpoll.Id }, newpoll.Adapt<PollResponse>());
     }
 
-    [HttpPut("")]
-    public IActionResult Update(Poll requst)
+    [HttpPut("{id}")]
+    public IActionResult Update( int id ,[FromBody]CreatePollRequest request)
     {
-        var updatepoll = _pollService.Update(requst);
+        var updatepoll = _pollService.Update(id, request.Adapt<Poll>());
         
         if(!updatepoll) return NotFound();
 
         return NoContent();
     }
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
       var deletepoll =  _pollService.Delete(id);
@@ -50,7 +67,7 @@ public class PollsController(IPollService _pollService) : ControllerBase
         return NoContent();
     }
 
-
+    
 
 
 
