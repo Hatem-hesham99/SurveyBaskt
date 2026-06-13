@@ -9,6 +9,9 @@ namespace SurveyBaskt.Mapping
         {
             config.NewConfig<Poll, PollResponse>()
                 .Map(dest => dest.Name, src => src.Title);
+            config.NewConfig<PollResponse,Poll>()
+                .Map(dest=>dest.Title, src=>src.Name);
+
         }
     }
 }

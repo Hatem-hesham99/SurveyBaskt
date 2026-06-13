@@ -1,16 +1,27 @@
-﻿namespace SurveyBaskt.Services
+﻿using SurveyBaskt.Contracts.Responses;
+
+namespace SurveyBaskt.Services
 {
     public interface IPollService
     {
-        IEnumerable<Poll> GetAll(); 
+        Task<IEnumerable<PollResponse>> GetAllAsync(CancellationToken cancellationToken = default); 
 
-        Poll? Get(int id);
+        Task<PollResponse?> GetAsync(int id, CancellationToken cancellationToken = default);
 
-        Poll Add(Poll poll);
+        Task<PollResponse> AddAsync(PollRequest request , CancellationToken cancellationToken= default );
 
-        bool Update(int id, Poll poll);
+        Task<bool> UpdateAsync(int id , PollRequest poll , CancellationToken cancellationToken = default );
 
-        bool Delete(int id);
+       Task< bool> DeleteAsync(int id,CancellationToken cancellationToken);
+       Task< bool> TogelPublish(int id,CancellationToken cancellationToken);
+
+        //Poll? Get(int id);
+
+        //Poll Add(Poll poll);
+
+        //bool Update(int id, Poll poll);
+
+        //bool Delete(int id);
 
     }
 }
