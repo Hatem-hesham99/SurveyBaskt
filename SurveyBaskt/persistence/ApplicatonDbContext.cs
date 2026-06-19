@@ -1,8 +1,9 @@
-﻿using System.Reflection;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Reflection;
 
 namespace SurveyBaskt.persistence
 {
-    public class ApplicatonDbContext(DbContextOptions<ApplicatonDbContext> options) : DbContext(options)
+    public class ApplicatonDbContext(DbContextOptions<ApplicatonDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
        public DbSet<Poll> Polls { get; set; }
 
