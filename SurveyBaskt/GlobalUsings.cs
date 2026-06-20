@@ -7,3 +7,4 @@ global using SurveyBaskt.Contracts.Requests;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using SurveyBaskt.persistence;
+global using Microsoft.Extensions.Options;

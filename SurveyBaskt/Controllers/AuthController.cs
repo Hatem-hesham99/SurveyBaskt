@@ -3,9 +3,9 @@
 namespace SurveyBaskt.Controllers
 
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
-    public class AuthController(IAuthService _authService) : ControllerBase
+    public class AuthController(IAuthService _authService ) : ControllerBase
     {
 
 
@@ -16,5 +16,8 @@ namespace SurveyBaskt.Controllers
             var response = await _authService.GetTokenAsync(request.Email, request.Password, cancellationToken);
             return response is null ? BadRequest("Invalid email or password.") : Ok(response);  
         }
+
+       
+
     }
 }

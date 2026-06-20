@@ -2,6 +2,7 @@
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SurveyBaskt.Authantication;
@@ -13,7 +14,7 @@ namespace SurveyBaskt
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddDependencies(this IServiceCollection services , IConfiguration configuration)
+        public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             // Add services to the container.
 
@@ -27,7 +28,7 @@ namespace SurveyBaskt
                 throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             services.AddDbContext<ApplicatonDbContext>(options =>
                 options.UseSqlServer(connectionstring)
-                .LogTo(massage=> Debug.WriteLine(massage) , LogLevel.Warning) 
+                .LogTo(massage => Debug.WriteLine(massage), LogLevel.Warning)
                 );
 
             services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<ApplicatonDbContext>();
@@ -43,27 +44,47 @@ namespace SurveyBaskt
                 .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             //add Authantication
+
+            //services.Configure<JwtOptions>(configuration.GetSection("Jwt")) ;
+
+            services.AddOptions<JwtOptions>()
+                .Bind(configuration.GetSection("Jwt"))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+                
+
+            var jwtOption = configuration.GetSection("Jwt").Get<JwtOptions>();
+
+
+
+            //var jwtOption = new JwtOptions();
+            //configuration.Bind("Jwt", jwtOption);
+
+
             services.AddAuthentication(op =>
             {
-                op.DefaultAuthenticateScheme= JwtBearerDefaults.AuthenticationScheme;
-                op.DefaultChallengeScheme= JwtBearerDefaults.AuthenticationScheme;
+                op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(op =>
             {
-                op.TokenValidationParameters=new TokenValidationParameters
+                op.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = "SurveyBaskt App create by hatem",
+                    ValidIssuer = jwtOption?.Issuer,
                     ValidateAudience = true,
-                    ValidAudience = "SurveyBaskt Users",
+                    ValidAudience = jwtOption?.Audience,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("J3rpXIEJ7PNNHSSlOsFRLf1PTnAC1DhW")),
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtOption?.SigningKey!)),
                     ValidateLifetime = true,
                 };
             });
 
-            // add poll service
-            services.AddScoped<IAuthService, AuthService>();
+          
+      
+
+        // add poll service
+        services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPollService, PollService>();
             services.AddSingleton<IJwtProvider, JwtProvider>();
 

@@ -4,12 +4,14 @@ using System.Security.Claims;
 
 namespace SurveyBaskt.Authantication
 {
-    public class JwtProvider : IJwtProvider
+    public class JwtProvider(IOptions<JwtOptions> jwtoptions) : IJwtProvider
     {
+        private readonly JwtOptions _jwtoptions = jwtoptions.Value;
+
         public (string Token, int expiresIn) GenerateToken(ApplicationUser user)
         {
 
-            var secretKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("J3rpXIEJ7PNNHSSlOsFRLf1PTnAC1DhW")); // Replace with your actual secret key
+            var secretKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_jwtoptions.SigningKey)); // Replace with your actual secret key
 
             SigningCredentials userSigningCredential = new SigningCredentials (secretKey, SecurityAlgorithms.HmacSha256);
 
@@ -23,21 +25,21 @@ namespace SurveyBaskt.Authantication
 
                 ];
 
-            var expiresin = 30;
+            //var expiresin = 30;
 
             JwtSecurityToken myToken = new JwtSecurityToken(
-                 issuer: "SurveyBaskt App create by hatem",
-                 audience:"SurveyBaskt Users",
-                 expires: DateTime.Now.AddMinutes(expiresin),
+                 issuer: _jwtoptions.Issuer,
+                 audience:_jwtoptions.Audience,
+                 expires: DateTime.Now.AddMinutes(_jwtoptions.ExpiresInMinutes),
                  claims: UserClaims,
                  signingCredentials: userSigningCredential
                 );
 
             string token = new JwtSecurityTokenHandler().WriteToken(myToken);
 
-            token = $"Bearer +{token}";
+            token = $"Bearer {token}";
 
-            return (Token: token,expiresIn: expiresin);
+            return (Token: token,expiresIn: _jwtoptions.ExpiresInMinutes *60);
            
         }
     }

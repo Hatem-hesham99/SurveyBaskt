@@ -4,11 +4,13 @@ using SurveyBaskt;
 using SurveyBaskt.persistence;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
+var config = builder.Configuration.Sources;
 
 
-builder.Services.AddDependencies(builder.Configuration);
+builder.Services.AddDependencies(builder.Configuration );
 //builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<ApplicatonDbContext>(); 
 var app = builder.Build();
 
