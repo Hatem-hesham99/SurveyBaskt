@@ -34,16 +34,17 @@ namespace SurveyBaskt.Services
 
         public async Task<bool> UpdateAsync(int id, PollRequest createPoll , CancellationToken cancellationToken = default)
         {
-            PollResponse? pollResponse = await GetAsync(id, cancellationToken);
-            if(pollResponse == null) return false;
+            Poll? poll =  await GetPoll(id, cancellationToken); // await _dbContext.Polls.FindAsync(id, cancellationToken); 
+            if (poll == null) return false;
 
-            var poll = pollResponse.Adapt<Poll>();
+            
             
             poll.Summary = createPoll.Summary;
             poll.Ispublished = createPoll.Ispublished;
             poll.Title= createPoll.Title;
             poll.EndsAt = createPoll.EndsAt;
             poll.StartsAt = createPoll.StartsAt;
+          
 
             _dbContext.Update(poll);
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -71,6 +72,13 @@ namespace SurveyBaskt.Services
                 _dbContext.Polls.Update(poll);  
                 await _dbContext.SaveChangesAsync();
                 return true;
+        }
+
+
+        private async Task<Poll?> GetPoll(int id, CancellationToken cancellationToken = default)
+        {
+            var poll = await _dbContext.Polls.FindAsync(id, cancellationToken);
+            return poll;
         }
 
         #region In-Memory Data Store (Commented Out)

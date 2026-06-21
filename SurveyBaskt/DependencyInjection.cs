@@ -22,6 +22,19 @@ namespace SurveyBaskt
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             services.AddOpenApi();
 
+            // Add CORS policy
+
+            services.AddCors(op =>
+            {
+                op.AddDefaultPolicy( builder =>
+                {
+                    builder.AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowAnyOrigin();
+                });
+               
+            });
+
 
             // add db context
             var connectionstring = configuration.GetConnectionString("DefaultConnection") ??
@@ -30,6 +43,7 @@ namespace SurveyBaskt
                 options.UseSqlServer(connectionstring)
                 .LogTo(massage => Debug.WriteLine(massage), LogLevel.Warning)
                 );
+            services.AddHttpContextAccessor();
 
             services.AddIdentityCore<ApplicationUser>().AddEntityFrameworkStores<ApplicatonDbContext>();
 
@@ -77,7 +91,9 @@ namespace SurveyBaskt
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtOption?.SigningKey!)),
                     ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
                 };
+
             });
 
           

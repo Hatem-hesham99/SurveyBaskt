@@ -5,6 +5,10 @@
      string Name,
      string Summary,
      bool Ispublished,
+     //string? CreatedById,
+     //DateTime CreatedAt,
+     //string? UpdatedById,
+     //DateTime? UpdatedAt,
      DateOnly StartsAt,
      DateOnly EndsAt
      );
