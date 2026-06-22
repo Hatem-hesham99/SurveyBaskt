@@ -19,15 +19,15 @@ public class PollsController(IPollService _pollService) : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute] int id, CancellationToken cancellationToken)
     {
-        var poll = await _pollService.GetAsync(id, cancellationToken);
-        return poll == null ? NotFound() : Ok(poll);
+        var result = await _pollService.GetAsync(id, cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : ResultExtention.ToProblem(result, StatusCodes.Status404NotFound);   //Problem(statusCode: StatusCodes.Status404NotFound,title: result.Error.Code, detail:result.Error.Message );
     }
 
     [HttpPost("")]
     public async Task<IActionResult> Add([FromBody] PollRequest request, CancellationToken cancellationToken)
     {
         var newPoll = await _pollService.AddAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = newPoll.Id }, newPoll);
+        return newPoll.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = newPoll.Value.Id }, newPoll.Value) : ResultExtention.ToProblem(newPoll, StatusCodes.Status409Conflict);
     }
 
     [HttpPut("{id}")]
@@ -35,7 +35,13 @@ public class PollsController(IPollService _pollService) : ControllerBase
     {
         var result = await _pollService.UpdateAsync(id, createPollRequest , cancellationToken);
 
-        return result  ? NoContent() : NotFound();
+        if(result.IsSuccess) return NoContent();
+
+        if(result.Error.Code == "Poll Duplicate Title") return ResultExtention.ToProblem(result, StatusCodes.Status409Conflict);
+
+        return ResultExtention.ToProblem(result, StatusCodes.Status404NotFound);
+
+        //return result.IsSuccess  ? NoContent() : ResultExtention.ToProblem(result, StatusCodes.Status404NotFound);  //Problem(statusCode: StatusCodes.Status404NotFound, title: result.Error.Code, detail: result.Error.Message);
 
     }
 
@@ -43,13 +49,13 @@ public class PollsController(IPollService _pollService) : ControllerBase
     public async Task<IActionResult> Delete([FromRoute]int id , CancellationToken cancellationToken)
     {
         var result = await _pollService.DeleteAsync(id, cancellationToken);
-        return result ? NoContent() : NotFound();
+        return result.IsSuccess ? NoContent() : ResultExtention.ToProblem(result,StatusCodes.Status404NotFound);  //Problem(statusCode: StatusCodes.Status404NotFound, title: result.Error.Code, detail: result.Error.Message);
     }
     [HttpPut("TogelPublish/{id}")]
     public async Task<IActionResult> TogelPublishStatus([FromRoute] int id, CancellationToken cancellationToken)
     {
         var result = await _pollService.TogelPublish(id, cancellationToken);
-        return result ? NoContent() : NotFound();
+        return result.IsSuccess ? NoContent() : ResultExtention.ToProblem(result,StatusCodes.Status404NotFound);  //Problem(statusCode: StatusCodes.Status404NotFound, title: result.Error.Code, detail: result.Error.Message);
     }
 }
 

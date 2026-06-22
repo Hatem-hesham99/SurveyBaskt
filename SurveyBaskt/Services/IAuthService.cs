@@ -4,6 +4,6 @@ namespace SurveyBaskt.Services
 {
     public interface IAuthService
     {
-        Task<AuthResponse?> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default);
+        Task<Result<AuthResponse>> GetTokenAsync(string email, string password, CancellationToken cancellationToken = default);
     }
 }

@@ -1,6 +1,8 @@
 ﻿
+using Azure.Core;
 using Mapster;
 using SurveyBaskt.Contracts.Responses;
+using SurveyBaskt.Errors;
 
 namespace SurveyBaskt.Services
 {
@@ -18,27 +20,33 @@ namespace SurveyBaskt.Services
    
         }
 
-        public Task<PollResponse?> GetAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<PollResponse>> GetAsync(int id, CancellationToken cancellationToken = default)
         {
-           return _dbContext.Polls.AsNoTracking().Where(p=>p.Id == id).ProjectToType<PollResponse>().FirstOrDefaultAsync(cancellationToken);   
+           var pollResponse = await _dbContext.Polls.AsNoTracking().Where(p=>p.Id == id).ProjectToType<PollResponse>().FirstOrDefaultAsync(cancellationToken);
+
+            return pollResponse != null ? Result.Success(pollResponse) : Result.Failure<PollResponse>(PollError.PollNotFound);
         }
 
-        public async Task<PollResponse> AddAsync(PollRequest request , CancellationToken cancellationToken = default )
+        public async Task<Result<PollResponse>> AddAsync(PollRequest request , CancellationToken cancellationToken = default )
         {
+          var matchpoll =await _dbContext.Polls.AnyAsync(p => p.Title == request.Title);
+          if (matchpoll) return Result.Failure<PollResponse>(PollError.pollDuplicateTitle);
           var poll = request.Adapt<Poll>();
           await _dbContext.Polls.AddAsync(poll, cancellationToken); 
           await _dbContext.SaveChangesAsync(cancellationToken);
           var response = poll.Adapt<PollResponse>();
-          return response;
+          return Result.Success( response);
         }
 
-        public async Task<bool> UpdateAsync(int id, PollRequest createPoll , CancellationToken cancellationToken = default)
+        public async Task<Result> UpdateAsync(int id, PollRequest createPoll , CancellationToken cancellationToken = default)
         {
+           
             Poll? poll =  await GetPoll(id, cancellationToken); // await _dbContext.Polls.FindAsync(id, cancellationToken); 
-            if (poll == null) return false;
+            if (poll == null) return Result.Failure(PollError.PollNotFound);
 
-            
-            
+            var matchpoll = await _dbContext.Polls.AnyAsync(p => p.Title == createPoll.Title && p.Id != id);
+            if (matchpoll) return Result.Failure<PollResponse>(PollError.pollDuplicateTitle);
+
             poll.Summary = createPoll.Summary;
             poll.Ispublished = createPoll.Ispublished;
             poll.Title= createPoll.Title;
@@ -48,30 +56,30 @@ namespace SurveyBaskt.Services
 
             _dbContext.Update(poll);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            return true;
+            return Result.Success();
 
 
         }
 
-        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken)
         { 
             var pollresponse = await GetAsync(id, cancellationToken);
-            if(pollresponse == null) return false;
+            if(pollresponse == null) return Result.Failure(PollError.PollNotFound);
             var poll = pollresponse.Adapt<Poll>();
             _dbContext.Polls.Remove(poll);  
             await _dbContext.SaveChangesAsync();
-            return true;
+            return Result.Success();
         }
 
-        public async Task<bool> TogelPublish(int id, CancellationToken cancellationToken)
+        public async Task<Result> TogelPublish(int id, CancellationToken cancellationToken)
             {
                 var pollresponse = await GetAsync(id, cancellationToken);
-                if(pollresponse == null) return false;
+                if(pollresponse == null) return Result.Failure(PollError.PollNotFound);
                 var poll = pollresponse.Adapt<Poll>();
                 poll.Ispublished = !poll.Ispublished;
                 _dbContext.Polls.Update(poll);  
                 await _dbContext.SaveChangesAsync();
-                return true;
+                return Result.Success();
         }
 
 
