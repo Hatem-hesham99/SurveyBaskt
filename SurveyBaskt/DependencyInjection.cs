@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SurveyBaskt.Authantication;
+using SurveyBaskt.Middleware;
 using SurveyBaskt.persistence;
 using System.Diagnostics;
 using System.Reflection;
@@ -101,10 +102,14 @@ namespace SurveyBaskt
 
         // add poll service
         services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IPollService, PollService>();
-            services.AddSingleton<IJwtProvider, JwtProvider>();
+        services.AddScoped<IPollService, PollService>();
+        services.AddSingleton<IJwtProvider, JwtProvider>();
+        // exception handeler 
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
 
-            return services;
+        return services;
+
         }
     }
 }

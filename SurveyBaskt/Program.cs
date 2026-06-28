@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SurveyBaskt;
-
+using SurveyBaskt.Middleware;
 using SurveyBaskt.persistence;
 
 
@@ -24,11 +24,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseCors();
 
 app.UseAuthorization();
+app.UseExceptionHandler();
 
 //app.MapIdentityApi<ApplicationUser>();
 app.MapControllers();
