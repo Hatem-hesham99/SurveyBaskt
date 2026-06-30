@@ -14,8 +14,11 @@ namespace SurveyBaskt.Entities
         public bool Ispublished { get; set; }
         public DateOnly StartsAt { get; set; }
         public DateOnly EndsAt { get; set; }
-       
-     
+
+
+        public ICollection<Quesion> Quesions { get; set; } = [];   
+
+
 
     }
 }

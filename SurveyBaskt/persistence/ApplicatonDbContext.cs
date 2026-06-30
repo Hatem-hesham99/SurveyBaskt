@@ -8,10 +8,18 @@ namespace SurveyBaskt.persistence
     {
 
         public DbSet<Poll> Polls { get; set; }
-
+        public DbSet<Quesion> Quesions { get; set; }    
+        public DbSet<Answer> Answers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            var cascadeFks = modelBuilder.Model.GetEntityTypes().
+                                                SelectMany(Model => Model.GetForeignKeys())
+                                                .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+
+            foreach (var Fk in cascadeFks)
+                Fk.DeleteBehavior = DeleteBehavior.Restrict;
 
             base.OnModelCreating(modelBuilder);
         }

@@ -3,6 +3,7 @@ using Azure.Core;
 using Mapster;
 using SurveyBaskt.Contracts.Responses;
 using SurveyBaskt.Errors;
+using System.Diagnostics;
 
 namespace SurveyBaskt.Services
 {
@@ -12,7 +13,8 @@ namespace SurveyBaskt.Services
 
         public async Task<IEnumerable<PollResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            
+        
+           
                return  await _dbContext.Polls
                                             .AsNoTracking()
                                             .ProjectToType<PollResponse>()

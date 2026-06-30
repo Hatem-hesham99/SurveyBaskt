@@ -5,7 +5,7 @@ namespace SurveyBaskt.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 
 public class PollsController(IPollService _pollService) : ControllerBase
 {
