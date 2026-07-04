@@ -14,6 +14,7 @@
             builder.HasOne(a => a.Quesion)
                 .WithMany(q => q.Answers)
                 .HasForeignKey(a => a.QuesionId);
+
         
         }
     }

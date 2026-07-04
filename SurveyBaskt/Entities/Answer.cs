@@ -1,6 +1,6 @@
 ﻿namespace SurveyBaskt.Entities
 {
-    public class Answer : AuditableEntity
+    public sealed class Answer : AuditableEntity
     {
         public int Id { get; set; }
 

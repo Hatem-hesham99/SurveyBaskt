@@ -9,4 +9,6 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using SurveyBaskt.persistence;
 global using Microsoft.Extensions.Options;
 global using SurveyBaskt.Abstractions;
+global using SurveyBaskt.Contracts.Responses;
+
 
