@@ -24,7 +24,7 @@ namespace SurveyBaskt.Services
             question.PollId = pollId;
 
            
-            request.Answers.ForEach(answer => question.Answers.Add(new Answer { Content = answer }));
+            //request.Answers.ForEach(answer => question.Answers.Add(new Answer { Content = answer }));
 
             await _dbContext.Quesions.AddAsync(question, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);

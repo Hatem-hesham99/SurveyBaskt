@@ -103,9 +103,11 @@ namespace SurveyBaskt
         // add poll service
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IPollService, PollService>();
+        services.AddScoped<IQuesionService, QuesionService>();
         services.AddSingleton<IJwtProvider, JwtProvider>();
-        // exception handeler 
-        services.AddExceptionHandler<GlobalExceptionHandler>();
+
+            // exception handeler 
+            services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
         return services;
