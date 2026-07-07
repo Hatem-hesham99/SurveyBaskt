@@ -13,7 +13,7 @@ var config = builder.Configuration.Sources;
 
 
 builder.Services.AddDependencies(builder.Configuration );
-//builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<ApplicatonDbContext>(); 
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>().AddEntityFrameworkStores<ApplicatonDbContext>(); 
 
 
 
@@ -40,7 +40,7 @@ app.UseCors();
 app.UseAuthorization();
 app.UseExceptionHandler();
 
-//app.MapIdentityApi<ApplicationUser>();
+app.MapIdentityApi<ApplicationUser>();
 app.MapControllers();
 
 app.Run();

@@ -5,6 +5,29 @@ namespace SurveyBaskt.Services
 {
     public class QuesionService(ApplicatonDbContext _dbContext) : IQuesionService
     {
+
+
+        public async Task<Result<IEnumerable<QuesionResponse>>> GetAllAsync(int pollId, CancellationToken cancellationToken)
+        {
+            bool PollIsExcist = await _dbContext.Polls.AnyAsync(p=>p.Id == pollId , cancellationToken );
+            if (!PollIsExcist) return   Result.Failure<IEnumerable<QuesionResponse>>(PollError.PollNotFound); 
+
+            var result = await _dbContext.Quesions.Where(q => q.PollId == pollId ).AsNoTracking().ProjectToType<QuesionResponse>().ToListAsync(cancellationToken);
+            return Result.Success<IEnumerable<QuesionResponse>>(result);
+        }
+
+        public async Task<Result<QuesionResponse>> GetAsync(int pollId, int Id, CancellationToken cancellationToken)
+        {
+            bool pollIsExcist = await _dbContext.Polls.AnyAsync(p=>p.Id ==pollId , cancellationToken);
+            if (!pollIsExcist) return Result.Failure<QuesionResponse>(PollError.PollNotFound);
+
+            var quesion =await _dbContext.Quesions.Where(q=>q.Id == Id && q.PollId == pollId).ProjectToType<QuesionResponse>().FirstOrDefaultAsync();
+
+            if (quesion is null) return Result.Failure<QuesionResponse>(QuesionError.QuesionNotFound);
+            
+            return Result.Success(quesion);
+
+        }
         public async Task<Result<QuesionResponse>> AddAsync(int pollId,QuesionRequest request , CancellationToken cancellationToken)
         {
 
@@ -32,5 +55,7 @@ namespace SurveyBaskt.Services
             var response = question.Adapt<QuesionResponse>();
             return Result.Success(response);
         }
+
+ 
     }
 }
