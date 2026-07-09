@@ -13,7 +13,7 @@ namespace SurveyBaskt.Services
         Task<Result> UpdateAsync(int id , PollRequest poll , CancellationToken cancellationToken = default );
 
        Task<Result> DeleteAsync(int id,CancellationToken cancellationToken);
-       Task<Result> TogelPublish(int id,CancellationToken cancellationToken);
+       Task<Result> TogglePublishAsync(int id,CancellationToken cancellationToken);
 
         //Poll? Get(int id);
 

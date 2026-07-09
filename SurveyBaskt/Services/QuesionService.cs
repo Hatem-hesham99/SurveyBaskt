@@ -15,7 +15,6 @@ namespace SurveyBaskt.Services
             var result = await _dbContext.Quesions.Where(q => q.PollId == pollId ).AsNoTracking().ProjectToType<QuesionResponse>().ToListAsync(cancellationToken);
             return Result.Success<IEnumerable<QuesionResponse>>(result);
         }
-
         public async Task<Result<QuesionResponse>> GetAsync(int pollId, int Id, CancellationToken cancellationToken)
         {
             bool pollIsExcist = await _dbContext.Polls.AnyAsync(p=>p.Id ==pollId , cancellationToken);
@@ -55,6 +54,7 @@ namespace SurveyBaskt.Services
             var response = question.Adapt<QuesionResponse>();
             return Result.Success(response);
         }
+
 
  
     }

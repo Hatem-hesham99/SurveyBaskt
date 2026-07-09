@@ -54,7 +54,7 @@ public class PollsController(IPollService _pollService) : ControllerBase
     [HttpPut("TogelPublish/{id}")]
     public async Task<IActionResult> TogelPublishStatus([FromRoute] int id, CancellationToken cancellationToken)
     {
-        var result = await _pollService.TogelPublish(id, cancellationToken);
+        var result = await _pollService.TogglePublishAsync(id, cancellationToken);
         return result.IsSuccess ? NoContent() : ResultExtention.ToProblem(result,StatusCodes.Status404NotFound);  //Problem(statusCode: StatusCodes.Status404NotFound, title: result.Error.Code, detail: result.Error.Message);
     }
 }
