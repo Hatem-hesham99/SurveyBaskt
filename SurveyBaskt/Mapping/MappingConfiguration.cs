@@ -12,6 +12,10 @@ namespace SurveyBaskt.Mapping
             config.NewConfig<PollResponse,Poll>()
                 .Map(dest=>dest.Title, src=>src.Name);
 
+            //mapping for PollRequest to Poll
+            config.NewConfig<Poll, PollRequest>().TwoWays();
+
+
             // Quesion mapping
 
             config.NewConfig<QuesionRequest, Quesion>()

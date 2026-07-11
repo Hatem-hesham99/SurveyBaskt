@@ -8,7 +8,7 @@ namespace SurveyBaskt.Contracts.Requests
      string Title,
      string Summary,
      bool Ispublished,
-     string? CreatedById ,
+     string? CreatedById, 
      DateTime CreatedAt,
      string? UpdatedById,
      DateTime? UpdatedAt,

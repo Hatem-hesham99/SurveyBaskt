@@ -38,20 +38,24 @@ namespace SurveyBaskt.Services
 
         public async Task<Result> UpdateAsync(int id, PollRequest createPoll , CancellationToken cancellationToken = default)
         {  
-            Poll? poll = await _dbContext.Polls.FirstOrDefaultAsync(p => p.Id == id, cancellationToken); ; // await _dbContext.Polls.FindAsync(id, cancellationToken); 
+            Poll? poll = await _dbContext.Polls.SingleOrDefaultAsync(p => p.Id == id, cancellationToken); ; // await _dbContext.Polls.FindAsync(id, cancellationToken); 
+            var x = poll.CreatedById;
+            var c = poll.CreatedAt;
             if (poll == null) return Result.Failure(PollError.PollNotFound);
 
             var matchpoll = await _dbContext.Polls.AnyAsync(p => p.Title == createPoll.Title && p.Id != id,cancellationToken);
             if (matchpoll) return Result.Failure(PollError.pollDuplicateTitle);
 
-            createPoll.Adapt(poll);
+            //createPoll.Adapt(poll);
 
-            //poll.Summary = createPoll.Summary;
-            //poll.Ispublished = createPoll.Ispublished;
-            //poll.Title= createPoll.Title;
-            //poll.EndsAt = createPoll.EndsAt;
-            //poll.StartsAt = createPoll.StartsAt;
-         
+            poll.Summary = createPoll.Summary;
+            poll.Ispublished = createPoll.Ispublished;
+            poll.Title = createPoll.Title;
+            poll.EndsAt = createPoll.EndsAt;
+            poll.StartsAt = createPoll.StartsAt;
+
+
+
             await _dbContext.SaveChangesAsync(cancellationToken);
             return Result.Success();
         }
