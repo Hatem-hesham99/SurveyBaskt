@@ -10,10 +10,16 @@
 
             RuleFor(x => x.Answers)
                 .NotNull().WithMessage("Answers are required.")
-                .Must(answers => answers.Count >= 2).WithMessage("At least two answers are required.")
-                .Must(answers => answers.All(answer => !string.IsNullOrWhiteSpace(answer))).WithMessage("Answers cannot be empty or whitespace.");
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.Answers)
+                        .Must(answers => answers.Count >= 2).WithMessage("At least two answers are required.")
+                        .Must(answers => answers.All(answer => !string.IsNullOrWhiteSpace(answer))).WithMessage("Answers cannot be empty or whitespace.");
+                    RuleFor(x => x.Answers).Must(answer => answer.Distinct().Count() == answer.Count).WithMessage("Answers must be unique.");
+                });
 
-            RuleFor(x=>x.Answers).Must(answer => answer.Distinct().Count() == answer.Count).WithMessage("Answers must be unique.");
+         
+                                
         }
     }
 }

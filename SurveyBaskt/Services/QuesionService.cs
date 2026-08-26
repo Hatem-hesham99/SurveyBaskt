@@ -56,6 +56,51 @@ namespace SurveyBaskt.Services
         }
 
 
- 
+        public async Task<Result> UpdateAsync(int pollId, int id, QuesionRequest request, CancellationToken cancellationToken)
+        {
+            var quesionIsExist = await _dbContext.Quesions.AnyAsync(q =>q.Content == request.Content && q.PollId == pollId && q.Id != id, cancellationToken: cancellationToken);
+
+            if (quesionIsExist)
+                return Result.Failure(QuesionError.DubliateContent);
+
+            var quesion = await _dbContext.Quesions.Include(a=>a.Answers).SingleOrDefaultAsync(q => q.Id == id && q.PollId == pollId, cancellationToken);
+
+            if (quesion is null)
+                return Result.Failure(QuesionError.QuesionNotFound);
+
+
+            quesion.Content = request.Content;
+
+            // current answers
+            var currentanswer = quesion.Answers.Select(q=>q.Content).ToList();
+            // new answers
+            var newAnswers = request.Answers.Except(currentanswer).ToList();
+            // Add new answers
+            newAnswers.ForEach(answer => quesion.Answers.Add(new Answer { Content = answer }));
+            // Remove deleted answers
+          
+            quesion.Answers.ToList().ForEach(answer =>
+            {
+               answer.IsActive = request.Answers.Contains(answer.Content);
+            });
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return Result.Success();
+
+        }
+
+
+        public async Task<Result> ToggleStatusAsync(int pollId, int Id,  CancellationToken cancellationToken)
+        {
+           var quesion = _dbContext.Quesions.FirstOrDefault(q => q.Id == Id && q.PollId == pollId);
+           if (quesion is null)
+               return Result.Failure(QuesionError.QuesionNotFound);
+
+           quesion.IsActive = !quesion.IsActive;
+           await _dbContext.SaveChangesAsync(cancellationToken);
+           return Result.Success();
+        }
+
+        
     }
 }

@@ -37,5 +37,27 @@ namespace SurveyBaskt.Controllers
                                                                         : result.ToProblem(StatusCodes.Status404NotFound);
         }
 
+        [HttpPut("{id}")]
+
+        public async Task<IActionResult> Update([FromRoute] int pollId, [FromRoute] int id, [FromBody] QuesionRequest request, CancellationToken cancellationToken = default)
+        {
+            var result = await _quesionService.UpdateAsync(pollId, id, request, cancellationToken);
+            if (result.IsSuccess) return NoContent();
+            return result.Error.Equals(QuesionError.DubliateContent) ? result.ToProblem(StatusCodes.Status409Conflict)
+                                                                     : result.ToProblem(StatusCodes.Status404NotFound);
+        }
+
+
+        [HttpPut("{id}/ToggleStatus")]
+
+        public async Task<IActionResult> ToggleStatus([FromRoute] int pollId, [FromRoute] int id, CancellationToken cancellationToken = default)
+        {
+            var result = await _quesionService.ToggleStatusAsync(pollId, id,cancellationToken);
+            
+            return result.IsSuccess ? NoContent(): result.ToProblem(StatusCodes.Status404NotFound);
+
+        }
+
+
     }
 }

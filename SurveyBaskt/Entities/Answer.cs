@@ -9,7 +9,7 @@
         public bool IsActive { get; set; } = true;
 
 
-
+         
         public int QuesionId { get; set; }
         public Quesion Quesion { get; set; } = default!;
     }
