@@ -18,6 +18,15 @@ namespace SurveyBaskt.Services
    
         }
 
+        public async Task<IEnumerable<PollResponse>> GetCurrentlyActivePollsAsync(CancellationToken cancellationToken = default)
+        {
+           return await _dbContext.Polls
+                            .AsNoTracking()
+                            .Where(p => p.Ispublished && p.StartsAt <= DateOnly.FromDateTime( DateTime.UtcNow) &&  p.EndsAt >= DateOnly.FromDateTime(DateTime.UtcNow))
+                            .ProjectToType<PollResponse>()
+                            .ToListAsync(cancellationToken);
+        }
+
         public async Task<Result<PollResponse>> GetAsync(int id, CancellationToken cancellationToken = default)
         {
            var pollResponse = await _dbContext.Polls.AsNoTracking().Where(p=>p.Id == id).ProjectToType<PollResponse>().FirstOrDefaultAsync(cancellationToken);
@@ -78,6 +87,8 @@ namespace SurveyBaskt.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
             return Result.Success();
         }
+
+  
 
 
         //private async Task<Poll?> GetPoll(int id, CancellationToken cancellationToken = default)

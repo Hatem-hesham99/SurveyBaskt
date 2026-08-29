@@ -15,6 +15,34 @@ namespace SurveyBaskt.Services
             var result = await _dbContext.Quesions.Where(q => q.PollId == pollId ).AsNoTracking().ProjectToType<QuesionResponse>().ToListAsync(cancellationToken);
             return Result.Success<IEnumerable<QuesionResponse>>(result);
         }
+
+
+        public async Task<Result<IEnumerable<QuesionResponse>>> GetCurrentlyActiveQuesionsAsync(int pollId, string userId, CancellationToken cancellationToken)
+        {
+           var pollisExist =await _dbContext.Polls.AnyAsync(p => p.Id == pollId && p.Ispublished 
+                                                 && p.StartsAt <= DateOnly.FromDateTime(DateTime.UtcNow) && p.EndsAt >= DateOnly.FromDateTime(DateTime.UtcNow),cancellationToken);
+            if(!pollisExist) 
+                return Result.Failure<IEnumerable<QuesionResponse>>(PollError.PollNotFound);
+            var userHasAlreadyAnswered = await _dbContext.Votes.AnyAsync(v=>v.UserId == userId && v.PollId == pollId,cancellationToken);
+            if(userHasAlreadyAnswered)
+                return Result.Failure<IEnumerable<QuesionResponse>>(VoteError.UserHasAlreadyAnswered);
+            var questions = await _dbContext.Quesions
+                                 .Where(q=>q.PollId == pollId && q.IsActive)
+                                 .Include(q => q.Answers)
+                .Select(  q=> new QuesionResponse(
+
+                    q.Id ,
+                    q.Content,
+                    q.Answers.Where(a => a.IsActive).Select(a => new AnswerResponse
+                    (
+                       a.Id,
+                       a.Content
+                    ))
+                ))
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+            return Result.Success<IEnumerable<QuesionResponse>>(questions);
+        }
         public async Task<Result<QuesionResponse>> GetAsync(int pollId, int Id, CancellationToken cancellationToken)
         {
             bool pollIsExcist = await _dbContext.Polls.AnyAsync(p=>p.Id ==pollId , cancellationToken);
@@ -101,6 +129,6 @@ namespace SurveyBaskt.Services
            return Result.Success();
         }
 
-        
+    
     }
 }

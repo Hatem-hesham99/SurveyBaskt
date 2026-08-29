@@ -16,9 +16,9 @@ namespace SurveyBaskt.Entities
         public DateOnly EndsAt { get; set; }
 
 
-        public ICollection<Quesion> Quesions { get; set; } = [];   
+        public ICollection<Quesion> Quesions { get; set; } = [];
 
-
+        public ICollection<Vote> Votes { get; set; } = [];
 
     }
 }

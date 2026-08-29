@@ -6,6 +6,8 @@ namespace SurveyBaskt.Services
     {
         Task<IEnumerable<PollResponse>> GetAllAsync(CancellationToken cancellationToken = default); 
 
+        Task<IEnumerable<PollResponse>> GetCurrentlyActivePollsAsync(CancellationToken cancellationToken = default);
+
         Task<Result<PollResponse>> GetAsync(int id, CancellationToken cancellationToken = default);
 
         Task<Result<PollResponse>> AddAsync(PollRequest request , CancellationToken cancellationToken= default );

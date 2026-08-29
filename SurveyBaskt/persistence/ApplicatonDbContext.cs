@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using SurveyBaskt.Extentions;
 using System.Reflection;
 using System.Security.Claims;
 
@@ -10,6 +11,9 @@ namespace SurveyBaskt.persistence
         public DbSet<Poll> Polls { get; set; }
         public DbSet<Quesion> Quesions { get; set; }    
         public DbSet<Answer> Answers { get; set; }
+
+        public DbSet<Vote> Votes { get; set; }
+        public DbSet<VoteAnswer> VoteAnswers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
@@ -28,7 +32,8 @@ namespace SurveyBaskt.persistence
         {
 
             var entries = ChangeTracker.Entries<AuditableEntity>();
-            var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+          //  var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = _httpContextAccessor.HttpContext?.User.GetUserId();
 
             foreach (var entry in entries)
             {
