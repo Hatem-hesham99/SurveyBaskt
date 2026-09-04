@@ -1,4 +1,4 @@
-﻿namespace SurveyBaskt.Services
+﻿namespace SurveyBaskt.Errors
 {
     public class VoteError
     {
