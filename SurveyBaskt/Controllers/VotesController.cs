@@ -15,11 +15,7 @@ namespace SurveyBaskt.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Start([FromRoute] int pollId,CancellationToken cancellationToken)
         {
-            var userId = User.GetUserId();
-
-         
-
-            if (string.IsNullOrEmpty(userId))
+            var userId = User.GetUserId();            if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
             var result = await _quesionservice.GetCurrentlyActiveQuesionsAsync(pollId, userId, cancellationToken);
