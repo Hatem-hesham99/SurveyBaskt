@@ -1,10 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Internal;
+
 using SurveyBaskt;
 using SurveyBaskt.Extentions;
-using SurveyBaskt.Middleware;
-using SurveyBaskt.persistence;
-
 
 
 var builder = WebApplication.CreateBuilder(args);
