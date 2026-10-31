@@ -5,9 +5,8 @@
         public VoteRequestValidator() 
         {
             RuleFor(x => x.VoteAnswers)
-                .NotEmpty().WithMessage("VoteAnswers cannot be empty.")
-                .Must(voteAnswers => voteAnswers.All(va => !string.IsNullOrWhiteSpace(va.QuesionId) && !string.IsNullOrWhiteSpace(va.AnswerId)))
-                .WithMessage("Each VoteAnswer must have a valid QuesionId and AnswerId.");
+                   .NotEmpty().WithMessage("VoteAnswers cannot be empty.").Must(voteAnswers => voteAnswers.All(va => va.QuesionId > 0 && va.AnswerId > 0))
+                    .WithMessage("QuestionId and AnswerId must be greater than 0.");
         }
     }
 }
